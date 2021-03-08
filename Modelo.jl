@@ -1,6 +1,6 @@
-include("""Parametros.jl""")
+using Plots
 
-t=0
+include("""Parametros.jl""")
 
 # Valores iniciais
 p_la = [0] # Pressão átrio esquerdo
@@ -16,11 +16,21 @@ q_vs = [0] # Fluxo venoso sistêmico
 q_ap = [0] # Fluxo arterial pulmonar
 q_vp = [0] # Fluxo venoso pulmonar
 
-x = [p_la, V_lv, p_as, p_vs, p_ra, V_rv, p_ap, p_vp, q_as, q_vs, q_ap, q_vp]
-
-
 # Laço principal
-while t<T
+for t in h:h:T
+
+    p_lv =
+    p_as =
+    p_rv =
+    p_ap = 
+
+    # Modelagem dos Diodos
+    D_mv = (p_la[end]-p_lv>0) ? true: false
+    D_av = (p_lv-p_as>0) ? true: false
+    D_tv = (p_ra[end]-p_rv>0) ? true: false
+    D_pv = (p_rv-p_ap>0) ? true: false
+
+
     # Valores incrementais
     dp_la =
     dV_lv =
@@ -46,10 +56,8 @@ while t<T
     push!(p_vp,p_vp[end]+dp_vp)
     push!(q_as,q_as[end]+dq_as)
     push!(q_vs,q_vs[end]+dq_vs)
-    push!(q_ap,q_ap[end]+dq_ap) 
+    push!(q_ap,q_ap[end]+dq_ap)
     push!(q_vp,q_vp[end]+dq_vp)
-
-    t = t+h
 end
 
 # Interface Final
