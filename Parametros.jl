@@ -2,10 +2,6 @@
 T = 8 # Tempo em segundos
 h = 1e-5 # Passo de cálculo em segundos
 
-
-
-
-
 # Lado Direito do Coração
 C_ra = [5, 5] # ml/mmHg
 D_tv = [1, 1] # Diodo
