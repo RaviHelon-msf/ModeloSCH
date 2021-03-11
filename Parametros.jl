@@ -18,20 +18,16 @@ CO = 5.08
 
 # Lado Direito do Coração
 C_ra = 5 # ml/mmHg
-D_tv = 1 # Diodo
 R_tv = 5e-3 # mmHg.s/ml
 E_s_rv = 1.15 # mmHg/ml
 E_d_rv = 0.1 # mmHg/ml
-D_pv = 1 # Diodo
 R_pv =  3e-3 # mmHg.s/ml
 
 # Lado Esquerdo do Coração
 C_la = 5 # ml/mmHg
-D_mv = 1 # Diodo
 R_mv = 5e-3 # mmHg.s/ml
 E_s_lv = 2.5 # mmHg/ml
 E_d_lv = 0.1 # mmHg/ml
-D_av = 1 # Diodo
 R_av = 8e-3 # mmHg.s/ml
 
 

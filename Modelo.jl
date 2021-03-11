@@ -22,9 +22,9 @@ p_rv = [0]
 for t in h:h:T
     t_m = t%T_c
 
-    if t_m<T_s:
+    if t_m<T_s
         E_m = 1 - cos(pi*t_m/T_s)
-    elseif (t_m<T_d)&&(t_m>T_s):
+    elseif (t_m<T_d)&&(t_m>T_s)
         E_m = 1 + cos(pi*(t_m - T_s)/(T_d-T_s))
     else
         E_m = 0
@@ -33,21 +33,25 @@ for t in h:h:T
     E_rv = E_d_rv - 0.5*(E_s_rv - E_d_rv)*E_m
     E_lv = E_d_lv - 0.5*(E_s_lv - E_d_lv)*E_m
 
-    push!(p_lv,P_lv[end-1] + E_lv*(V_lv[end] - V_lv[end-1]))
-    push!(p_rv,P_rv[end-1] + E_lv*(V_rv[end] - V_rv[end-1]))
-
+    if t>h
+        push!(p_lv,p_lv[end-1] + E_lv*(V_lv[end] - V_lv[end-1]))
+        push!(p_rv,p_rv[end-1] + E_lv*(V_rv[end] - V_rv[end-1]))
+    else
+        push!(p_lv,0)
+        push!(p_rv,0)
+    end
 
     # Modelagem dos Diodos
-    D_mv = (p_la[end]-p_lv>0) ? true: false
-    D_av = (p_lv-p_as>0) ? true: false
-    D_tv = (p_ra[end]-p_rv>0) ? true: false
-    D_pv = (p_rv-p_ap>0) ? true: false
+    D_mv = (p_la[end]-p_lv[end]>0) ? true : false
+    D_av = (p_lv[end]-p_as[end]>0) ? true : false
+    D_tv = (p_ra[end]-p_rv[end]>0) ? true : false
+    D_pv = (p_rv[end]-p_ap[end]>0) ? true : false
 
     #Fluxos Importantes
-    q_mv = (D_mv/R_mv)*(p_la[end]-p_lv)
-    q_av = (D_av/R_av)*(p_lv-p_as[end])
-    q_tv = (D_mv/R_mv)*(p_ra[end]-p_rv)
-    q_pv = (D_mv/R_mv)*(p_rv-p_ap[end])
+    q_mv = (D_mv/R_mv)*(p_la[end]-p_lv[end])
+    q_av = (D_av/R_av)*(p_lv[end]-p_as[end])
+    q_tv = (D_mv/R_mv)*(p_ra[end]-p_rv[end])
+    q_pv = (D_mv/R_mv)*(p_rv[end]-p_ap[end])
 
     # Valores incrementais
     dp_la = (1/C_la)*(q_vp[end] - q_mv)
