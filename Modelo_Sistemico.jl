@@ -65,5 +65,5 @@ end
 
 # Interface Final
 gr()
-plot(q_o)
+plot(aux)
 #println(p_ap)
