@@ -1,17 +1,9 @@
-function input_InCor(T = 3, passo = 1e-5, DutyCycle = 40, p_ejection = 190)
-    t = h:h:T-h
-    u = []
-
-    for n in h:h:T-h
-
-        t_m = (n%Tc)/Tc*100
-
-        if t_m <= DutyCycle
-            push!(u, Pej)
-        else
-            push!(u, 0)
-        end
+function input_InCor(t, Tc = 0.6, D = 40, amp = 190)
+    t_m = (t%Tc)/Tc*100
+    if t_m <= D
+        u = amp
+    else
+        u = 0
     end
-
-    return t, u
+    return u
 end

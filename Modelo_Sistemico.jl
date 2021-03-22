@@ -1,3 +1,4 @@
+using Dates
 using Plots
 using DifferentialEquations
 
@@ -5,97 +6,80 @@ include("""Parametros_Sistemico.jl""")
 include("""rungekutta4.jl""")
 include("""inputs.jl""")
 
-## Pré-Processamento: Parâmetrização
+teste = """default"""
+alg = RK4()
 
-theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs]
+## Planta
+
+function plantaInCor!(du,u,p,t)
+    p_cs = ((u[4]-u[5])*p[10]+u[2]+u[1])
+
+    if p[12] > p_cs
+        D_i = 1.0
+    else
+        D_i = 0.0
+    end
+
+    if p_cs > u[3]
+        D_o = 1
+    else
+        D_o = 0
+    end
+
+    du[1] = (p[13](t) - u[1])/p[1]/p[2]
+    du[2] = (p_cs[end] - u[1] - u[2])/p[10]/p[11]
+    du[3] = (u[5]-u[6])/p[9]
+    du[4] = (D_i*(u[1]-p_cs[end])-p[3]*u[4])/p[4]
+    du[5] = (D_o*(p_cs[end]-u[3])-p[5]*u[5])/p[6]
+    du[6] = (u[3]-p[12]-p[7]*u[6])/p[8]
+end
+
+
+## Pré-Processamento: Parâmetrização
+p_d = t -> input_InCor(t, Tc, DutyCycle, Pej)
+
+theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao, p_d]
 #Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs
 
 # Valores iniciais
-x0 = [[Pca], [Pcs], [Pao], [Qin], [Qout], [Qs]]
-
-# x0[1] = [Pca] # Pressão camara de ar
-# x0[2] = [Pcs] # Pressão Complacência camera de sangue
-# x0[3] = [Pao] # Pressão Aortica
-# x0[4] = [Qin] # Fluxo arterial sistêmico
-# x0[5] = [Qout] # Fluxo venoso sistêmico
-# x0[6] = [Qs] # Fluxo laço sistêmico
-
-p_cs = [Pcs]
-V_0 = Vo
+x0 = [Pca, Pcs, Pao, Qin, Qout, Qs]
 
 
 ## Simulação
+tspan = (0.0, 3*T)
+#plot(t,u)
+problem = ODEProblem(plantaInCor!,x0,tspan,theta)
+sol = solve(problem, alg)
 
-function SimInCor(t, u, x_0 = x0, par = theta)
+## Plotagem
 
-    if size(x0,1) != 6
-        println("""Quantidade inadequada de valores iniciais""")
-        return nothing
-    elseif size(par,1) != 11
-        println("""Quantidade inadequada de parâmetros""")
-        return nothing
-    end
+gr()
 
-    aux = [0.0]
-    # Laço principal
-    for n in range(1,length = size(t,1))
-
-        # Modelagem dos Diodos
-        if Pae > p_cs[end]
-            D_i = 1.0
-        else
-            D_i = 0.0
-        end
-
-        if p_cs[end] > x0[3][end]
-            D_o = 1
-        else
-            D_o = 0
-        end
-
-        #Fluxos Importantes
-        dx0 = Array{Function}(undef, 6);
-        # Passo de Euler
-        dx0[1] = y -> (u[n] - y)/par[1]/par[2]
-        dx0[2] = y -> (p_cs[end] - x0[1][end] - y)/par[10]/par[11]
-        dx0[3] = y -> (x0[5][end]-x0[6][end])/par[9]
-        dx0[4] = y -> (D_i*(x0[1][end]-p_cs[end])-par[3]*y)/par[4]
-        dx0[5] = y -> (D_o*(p_cs[end]-x0[3][end])-par[5]*y)/par[6]
-        dx0[6] = y -> (x0[3][end]-Pae-par[7]*y)/par[8]
+plot_press = plot(sol, label = """Câmara de ar""", vars = (0,1))
+plot_press = plot!(sol, label = """Complacência câmera de sangue""", vars = (0,2))
+plot_press = plot!(sol, label = """Aorta""", vars = (0,3))
+title!("""Pressões versus tempo""")
+ylabel!("""Pressões (mmHg)""")
+xlabel!("""Tempo (s)""")
 
 
-        # Dinâmica
-        push!(x0[1],rungekutta4(dx0[1], x0[1][end], h))
-        push!(x0[2],rungekutta4(dx0[2], x0[2][end], h))
-        push!(x0[3],rungekutta4(dx0[3], x0[3][end], h))
-        push!(x0[4],rungekutta4(dx0[4], x0[4][end], h))
-        push!(x0[5],rungekutta4(dx0[5], x0[5][end], h))
-        push!(x0[6],rungekutta4(dx0[6], x0[6][end], h))
+#filename1 = """Pressões""" + teste + string(today())
+#png(plot_press, filename1)
 
-        push!(p_cs,((x0[4][end]-x0[5][end])*par[10]+x0[2][end]+x0[1][end]))
+# x_0[1] = [Pca] # Pressão camara de ar
+# x_0[2] = [Pcs] # Pressão Complacência camera de sangue
+# x_0[3] = [Pao] # Pressão Aortica
 
-        aux = p_cs
-    end
+plot_flux =  plot(sol, label = """Cânula de entrada""",vars = (0,4))
+plot_flux =  plot!(sol, label = """Cânula de saída""",vars = (0,5))
+plot_flux =  plot!(sol, label = """Sistêmico""",vars = (0,6))
+title!("""Fluxos versus tempo""")
+ylabel!("""Fluxos (ml/s)""")
+xlabel!("""Tempo (s)""")
 
-    ## Interface Final
-    gr()
+#filename1 = """Fluxos""" + teste + string(today())
+#png(plot_press, filename1)
 
-    pAux = plot(aux)
-    display(pAux)
-
-    #println(p_ap)
-end
-
-t,u = input_InCor(3*Tc, h, DutyCycle, Pej)
-
-plot(t,u)
-
-SimInCor(t,u)
-
-#plotado = Plots.Plot{Plots.GRBackend}[]
-#push!(plotado, plot(x0[1]))
-#push!(plotado, plot(x0[2]))
-#push!(plotado, plot(x0[3]))
-#push!(plotado, plot(x0[4]))
-#push!(plotado, plot(x0[5]))
-#push!(plotado, plot(x0[6]))
+# x_0[4] = [Qin] # Fluxo arterial sistêmico
+# x_0[5] = [Qout] # Fluxo venoso sistêmico
+# x_0[6] = [Qs] # Fluxo laço sistêmico

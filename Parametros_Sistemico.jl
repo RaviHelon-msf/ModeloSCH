@@ -101,6 +101,6 @@ DutyCycle = 40; #(%)
 ## Simulação
 
 #Tempo:
-T = Tc*10.0; #tempo de simulação (segundos)
+T = Tc*3.0; #tempo de simulação (segundos)
 h=1e-3
 step_time = 4.0; #tempo de transição (aciona RBP)
