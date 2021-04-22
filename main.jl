@@ -1,92 +1,63 @@
 using Dates
 using Plots
-using DifferentialEquations
+using JuMP
+using Ipopt
+using Statistics
+using BenchmarkTools
 
 include("""Parametros_Sistemico.jl""")
 include("""inputs.jl""")
 include("""Modelo_Sistemico.jl""")
 
-teste = """default"""
-alg = RK4()
-
-## Pré-Processamento: Parâmetrização
-p_d = t -> input_InCor(t, Tc, DutyCycle, Pej)
-
-theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao, p_d]
-#Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs
-
-# Valores iniciais
-x0 = [Pca, Pcs, Pao, Qin, Qout, Qs]
+imagem = """.\\Imagens\\Ic\\"""
+dados  = """.\\Dados\\Ic\\"""
 
 
-## Simulação
-tspan = (0.0, 3*T)
-#plot(t,u)
-problem = ODEProblem(plantaInCor!,x0,tspan,theta)
-sol = solve(problem, alg)
+function ajuda(x)
+    delta = sqrt(mean((simInCor(x)[1,1]-referencia()[3,1]).^2))
+    return delta
+end
 
+#modelo = Model(Ipopt.Optimizer)
+
+## Otimização multiobjetivo
+
+#@variable(modelo, x >= 0)
+
+#JuMP.register(modelo,:ajuda,1,ajuda,autodiff=true)
+
+#@NLobjective(modelo, Min, ajuda(x))
+#theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao]
+#s = erroQuad(simInCor(theta)[1,1], ref[3,1])
+#optimize!(modelo)
 ## Plotagem
 
 gr()
 
-plot_press = plot(sol, vars = (0,1))
-title!("""Pressão na Câmara de ar""")
-ylabel!("""Pressão (mmHg)""")
-xlabel!("""Tempo (s)""")
+sol = simInCor()
+bm = @benchmark simInCor()
+
+#plot_press = plot(sol[1])
+#title!("""Pressão na Câmara de ar""")
+#ylabel!("""Pressão (mmHg)""")
+#xlabel!("""Tempo (s)""")
 
 
-filename1 = """Pca"""*teste*string(today())
-png(plot_press, filename1)
-
-
-plot_press = plot(sol, vars = (0,2))
-title!("""Pressão na Complacência câmera de sangue""")
-ylabel!("""Pressão (mmHg)""")
-xlabel!("""Tempo (s)""")
-
-
-filename1 = """Pccs"""*teste*string(today())
-png(plot_press, filename1)
-
-
-plot_press = plot(sol, vars = (0,3))
-title!("""Pressão na Aorta""")
-ylabel!("""Pressão (mmHg)""")
-xlabel!("""Tempo (s)""")
-
-
-filename1 = """Pao"""*teste*string(today())
-png(plot_press, filename1)
+#filename1 = imagem*"""Pao"""*string(today())
+#png(plot_press, filename1)
 
 # x_0[1] = [Pca] # Pressão camara de ar
 # x_0[2] = [Pcs] # Pressão Complacência camera de sangue
 # x_0[3] = [Pao] # Pressão Aortica
 
-plot_flux =  plot(sol, vars = (0,4))
-title!("""Fluxo na Cânula de entrada""")
-ylabel!("""Fluxo (ml/s)""")
-xlabel!("""Tempo (s)""")
+#plot_flux =  plot(sol[2])
+#title!("""Fluxo na Cânula de saída""")
+#ylabel!("""Fluxo (ml/s)""")
+#xlabel!("""Tempo (s)""")
 
-filename1 = """qi"""*teste*string(today())
-png(plot_flux, filename1)
+#filename1 = imagem*"""qo"""*string(today())
+#png(plot_flux, filename1)
 
-
-plot_flux =  plot(sol,vars = (0,5))
-title!("""Fluxo na Cânula de saída""")
-ylabel!("""Fluxo (ml/s)""")
-xlabel!("""Tempo (s)""")
-
-filename1 = """qo"""*teste*string(today())
-png(plot_flux, filename1)
-
-
-plot_flux =  plot(sol, vars = (0,6))
-title!("""Fluxo Sistêmico""")
-ylabel!("""Fluxo (ml/s)""")
-xlabel!("""Tempo (s)""")
-
-filename1 = """qs """*teste*string(today())
-png(plot_flux, filename1)
 
 # x_0[4] = [Qin] # Fluxo arterial sistêmico
 # x_0[5] = [Qout] # Fluxo venoso sistêmico

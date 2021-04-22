@@ -26,3 +26,11 @@ function old_Input(t)
     n = Integer(round(t/h[1][1]))
     return CSV.File("duty40.csv"; transpose=true, skipto = n, limit=1, header = false)[1][1]
 end
+
+function referencia()
+    a = CSV.File("""data.lvm""",header=0, type=Float64)
+    time = a.Column1
+    flux = a.Column4
+    pression = a.Column5
+    return [Array(a.Column1), Array(a.Column4), Array(a.Column5)]
+end
