@@ -15,9 +15,9 @@ function plantaInCor!(du,u,p,t)
     end
 
     if p_cs > u[3]
-        D_o = 1
+        D_o = 1.0
     else
-        D_o = 0
+        D_o = 0.0
     end
 
     du[1] = (p[13](t) - u[1])/p[1]/p[2]
@@ -43,13 +43,13 @@ function simInCor(x = Rca)
     p_d = t -> input_InCor(t, Tc, DutyCycle, Pej)
 
     # Valores iniciais
-    x0 = [Pca, Pcs, Pao, Qin, Qout, Qs]
+    x0 = typeof(x)[Pca, Pcs, Pao, Qin, Qout, Qs]
 
     theta = [x, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao, p_d]
     #Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs
     # Simulação
     ref = referencia()[1,1]
-    tspan = (0.0, ref[end] )
+    tspan = (0.0, ref[end])
     #plot(t,u)
     problem = ODEProblem(plantaInCor!,x0,tspan,theta)
     sol = DifferentialEquations.solve(problem, alg, dense = false, adaptive = false, dt = ref[2])

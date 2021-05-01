@@ -88,7 +88,7 @@ else
 end
 
 #Ciclo cardíaco
-Tc = 60/HR; #período do ciclo cardíaco (segundos) - valor definido por Daniel
+Tc = 60.0/HR; #período do ciclo cardíaco (segundos) - valor definido por Daniel
 
 #Fonte de pressão
 Pae = 6.0*p; #Pressão no átrio esquerdo
@@ -96,7 +96,7 @@ Pca = 0.0*p; #Pressão na câmara de ar
 Pej = 190.0*p; #Pressão de ejeção(atuador pneumático)
 
 #Largura de pulso
-DutyCycle = 40; #(%)
+DutyCycle = 40.0; #(%)
 
 ## Simulação
 

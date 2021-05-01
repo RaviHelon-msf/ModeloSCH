@@ -28,7 +28,7 @@ function old_Input(t)
 end
 
 function referencia()
-    a = CSV.File("""data.lvm""",header=0, type=Float64)
+    a = CSV.File("""data.lvm""", header=0, type=Float64)
     time = a.Column1
     flux = a.Column4
     pression = a.Column5

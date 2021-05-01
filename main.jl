@@ -14,33 +14,49 @@ dados  = """.\\Dados\\Ic\\"""
 
 
 function ajuda(x)
-    delta = sqrt(mean((simInCor(x)[1,1]-referencia()[3,1]).^2))
+    inp = simInCor(x)[1,1]
+    ref = referencia()[3,1]
+    resize!(ref, length(inp))
+    delta = sqrt(mean((inp-ref).^2.0))
     return delta
 end
 
-#modelo = Model(Ipopt.Optimizer)
+modelo = Model(Ipopt.Optimizer)
 
 ## Otimização multiobjetivo
 
-#@variable(modelo, x >= 0)
+@variable(modelo, x >= 0.0)
 
-#JuMP.register(modelo,:ajuda,1,ajuda,autodiff=true)
+JuMP.register(modelo,:ajuda,1,ajuda,autodiff=true)
 
-#@NLobjective(modelo, Min, ajuda(x))
+@NLobjective(modelo, Min, ajuda(x))
 #theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao]
 #s = erroQuad(simInCor(theta)[1,1], ref[3,1])
-#optimize!(modelo)
+optimize!(modelo)
+
+## Resultados
+
+if termination_status(modelo) != OPTIMIZE_NOT_CALLED
+    x_opt = value(x)
+    Out_opt = objective_value(modelo)
+    print("Resultado obtido: ")
+    print(termination_status(modelo))
+else
+    print("The model was not solved correctly. Termination Status: ")
+    print(termination_status(modelo))
+end
+
 ## Plotagem
 
 gr()
 
-sol = simInCor()
-bm = @benchmark simInCor()
+sol = simInCor(x_opt)
+bm = @benchmark simInCor(x_opt)
 
-#plot_press = plot(sol[1])
-#title!("""Pressão na Câmara de ar""")
-#ylabel!("""Pressão (mmHg)""")
-#xlabel!("""Tempo (s)""")
+plot_press = plot(sol[1])
+title!("""Pressão na Câmara de ar""")
+ylabel!("""Pressão (mmHg)""")
+xlabel!("""Tempo (s)""")
 
 
 #filename1 = imagem*"""Pao"""*string(today())
@@ -50,10 +66,10 @@ bm = @benchmark simInCor()
 # x_0[2] = [Pcs] # Pressão Complacência camera de sangue
 # x_0[3] = [Pao] # Pressão Aortica
 
-#plot_flux =  plot(sol[2])
-#title!("""Fluxo na Cânula de saída""")
-#ylabel!("""Fluxo (ml/s)""")
-#xlabel!("""Tempo (s)""")
+plot_flux =  plot(sol[2])
+title!("""Fluxo na Cânula de saída""")
+ylabel!("""Fluxo (ml/s)""")
+xlabel!("""Tempo (s)""")
 
 #filename1 = imagem*"""qo"""*string(today())
 #png(plot_flux, filename1)
