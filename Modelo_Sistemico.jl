@@ -39,7 +39,7 @@ end
 # x_0[6] = [Qs] # Fluxo laço sistêmico
 
 function simInCor(x = Rca)
-    alg = RK4()
+    alg = Tsit5()
     p_d = t -> input_InCor(t, Tc, DutyCycle, Pej)
 
     # Valores iniciais
@@ -52,7 +52,7 @@ function simInCor(x = Rca)
     tspan = (0.0, ref[end])
     #plot(t,u)
     problem = ODEProblem(plantaInCor!,x0,tspan,theta)
-    sol = DifferentialEquations.solve(problem, alg, dense = false, adaptive = false, dt = ref[2])
+    sol = DifferentialEquations.solve(problem, alg, dense = false, adaptive = true, tstops = ref)
 
     P = sol[3,:]
     Q = sol[5,:]

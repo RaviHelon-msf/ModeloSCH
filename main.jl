@@ -32,26 +32,26 @@ JuMP.register(modelo,:ajuda,1,ajuda,autodiff=true)
 @NLobjective(modelo, Min, ajuda(x))
 #theta = [Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao]
 #s = erroQuad(simInCor(theta)[1,1], ref[3,1])
-optimize!(modelo)
+#optimize!(modelo)
 
 ## Resultados
 
-if termination_status(modelo) != OPTIMIZE_NOT_CALLED
-    x_opt = value(x)
-    Out_opt = objective_value(modelo)
-    print("Resultado obtido: ")
-    print(termination_status(modelo))
-else
-    print("The model was not solved correctly. Termination Status: ")
-    print(termination_status(modelo))
-end
+#if termination_status(modelo) != MOI.OPTIMIZE_NOT_CALLED
+#    x_opt = value(x)
+#    Out_opt = objective_value(modelo)
+#    print("Resultado obtido: ")
+#    print(termination_status(modelo))
+#else
+#    print("The model was not solved correctly. Termination Status: ")
+#    print(termination_status(modelo))
+#end
 
 ## Plotagem
 
-gr()
+#gr()
 
-sol = simInCor(x_opt)
-bm = @benchmark simInCor(x_opt)
+sol = simInCor()
+bm = @benchmark simInCor() samples = 10000 seconds = 300
 
 plot_press = plot(sol[1])
 title!("""Pressão na Câmara de ar""")
@@ -66,12 +66,12 @@ xlabel!("""Tempo (s)""")
 # x_0[2] = [Pcs] # Pressão Complacência camera de sangue
 # x_0[3] = [Pao] # Pressão Aortica
 
-plot_flux =  plot(sol[2])
-title!("""Fluxo na Cânula de saída""")
-ylabel!("""Fluxo (ml/s)""")
-xlabel!("""Tempo (s)""")
+#plot_flux =  plot(sol[2])
+#title!("""Fluxo na Cânula de saída""")
+#ylabel!("""Fluxo (ml/s)""")
+#xlabel!("""Tempo (s)""")
 
-#filename1 = imagem*"""qo"""*string(today())
+#4filename1 = imagem*"""qo"""*string(today())
 #png(plot_flux, filename1)
 
 
