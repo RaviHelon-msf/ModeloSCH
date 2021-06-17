@@ -38,14 +38,14 @@ end
 # x_0[5] = [Qout] # Fluxo venoso sistêmico
 # x_0[6] = [Qs] # Fluxo laço sistêmico
 
-function simInCor(x = Rca)
+function simInCor(R_ca = Rca, C_ca = Cca, R_i = Ri, L_i = Li, R_o = Ro, L_o = Lo, R_s = Rs, L_s = Ls, C_ao = Cao, R_cs = Rcs, C_cs = Ccs, P_ao = Pao)
     alg = Tsit5()
     p_d = t -> input_InCor(t, Tc, DutyCycle, Pej)
 
     # Valores iniciais
-    x0 = typeof(x)[Pca, Pcs, Pao, Qin, Qout, Qs]
+    x0 = typeof(R_ca)[Pca, Pcs, P_ao, Qin, Qout, Qs]
 
-    theta = [x, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs, Pao, p_d]
+    theta = [R_ca, C_ca, R_i, L_i, R_o, L_o, R_s, L_s, C_ao, R_cs, C_cs, P_ao, p_d]
     #Rca, Cca, Ri, Li, Ro, Lo, Rs, Ls, Cao, Rcs, Ccs
     # Simulação
     ref = referencia()[1,1]
@@ -54,8 +54,8 @@ function simInCor(x = Rca)
     problem = ODEProblem(plantaInCor!,x0,tspan,theta)
     sol = DifferentialEquations.solve(problem, alg, dense = false, adaptive = true, tstops = ref)
 
-    P = sol[3,:]
-    Q = sol[5,:]
+    P = sol(ref)[3,:]
+    Q = sol(ref)[5,:]
 
     return [P, Q]
 end

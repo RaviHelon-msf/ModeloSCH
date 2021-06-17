@@ -18,24 +18,24 @@ if(flag_condicao==1)
     #Simulações Daniel - Simscape
     #1) Pao - 80/40 mmHg: SH_UFCG_HR100_Pao_80_40.slx
 
-    HR = 100.0; # frequência cardíaca (bpm)
+    HR = 148.0; # frequência cardíaca (bpm)
 
     # # Resistências (mmHg.s/mL)
-    Ri = 0.4283*Kr; #Resistência da cânula de entrada
-    Ro = 1.2841*Kr; #Resistência da cânula de saída
-    Rs = 2.2798*Kr; #Resistência sistêmica
-    Rca = 0.0025*Kr; #Resistência da câmera de ar
-    Rcs = 0.1*Kr; #Resistência da câmera de sangue
+    Ri = 0.44386585299231884;#0.4283*Kr; #Resistência da cânula de entrada
+    Ro = 1.2770377151128232;#1.2841*Kr; #Resistência da cânula de saída
+    Rs = 2.206942082054458;#2.2798*Kr; #Resistência sistêmica
+    Rca = 0.009081589164527896; #0.0025*Kr; #Resistência da câmera de ar
+    Rcs = 0.01963046526319262;#0.1*Kr; #Resistência da câmera de sangue
 
     # #Complacências (mL/mmHg)
-    Cca = 13.7054*Kc; #Complacência da câmara de ar
+    Cca = 13.741412268717422; #13.7054*Kc; #Complacência da câmara de ar
     Ccs = 0.25*Kc; #Complacência da câmara de sangue
-    Cao = 0.23*Kc; #Complacência da aorta
+    Cao = 0.1219486383036524; #0.23*Kc; #Complacência da aorta
 
     # #Inertâncias (mmHg.s^2/mL)
-    Li = 0.0402*Kl; #Inertância da cânula de entrada
-    Lo = 0.0426*Kl; #Inertância da cânula de saída
-    Ls = 0.1228*Kl; #Inertância sistêmica
+    Li = 0.09726700389353592;#0.0402*Kl; #Inertância da cânula de entrada
+    Lo = 0.03309521995770156;#0.0426*Kl; #Inertância da cânula de saída
+    Ls = 0.1869945546013193; #0.1228*Kl; #Inertância sistêmica
 
     map = 61.0; #valor médio de Pao
     eep_num = 1523.0; #valor médio de Qout*Pao
